@@ -13,6 +13,7 @@ const crearToken = (usuario, secreta, expiresIn) => {
 //Resolvers
 const resolvers = {
     Query: {
+        //ricolas
         obtenerUsuario: async (_, {token}) =>{
             const usuarioId = await jwt.verify(token, process.env.SECRETA)
             return usuarioId
