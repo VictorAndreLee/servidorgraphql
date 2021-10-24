@@ -15,6 +15,16 @@ const typeDefs = gql`
         token: String
     }
     
+    type Alumno {
+        id: ID
+        nombre: String
+        apellido: String
+        direccion: String
+        fecha_nacimiento: String
+        creado: String
+    }
+
+    
 
     input UsuarioInput {
         nombre: String!
@@ -29,12 +39,32 @@ const typeDefs = gql`
     }
 
     type Query{
+        #Usuarios
         obtenerUsuario(token: String!): Usuario
+
+        #Alumnos
+        obtenerAlumno: [Alumno]
+        obtenerAlumnos(id: ID!) : Alumno
+
     }
 
+    input AlumnoInput{
+        nombre: String!
+        apellido: String!
+        direccion: String!
+        fecha_nacimiento: String!
+    }
+
+
     type Mutation{
+        #Usuarios
         nuevoUsuario(input : UsuarioInput): Usuario
         autenticarUsuario(input: AutenticarInput): Token
+        
+        #Alumnos
+        nuevoAlumno(input: AlumnoInput) : Alumno
+        actualizarAlumno( id: ID!, input : AlumnoInput) : Alumno
+        eliminarAlumno( id: ID!) : String
     }
 `;
 

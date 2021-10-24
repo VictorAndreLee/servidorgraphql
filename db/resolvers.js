@@ -1,4 +1,5 @@
 const Usuario = require('../models/Usuario');
+const Alumno = require('../models/Alumno');
 const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
@@ -13,10 +14,27 @@ const crearToken = (usuario, secreta, expiresIn) => {
 //Resolvers
 const resolvers = {
     Query: {
-        //ricolas
+        
         obtenerUsuario: async (_, {token}) =>{
             const usuarioId = await jwt.verify(token, process.env.SECRETA)
             return usuarioId
+        },
+        obtenerAlumno: async () => {
+           try {
+              const alumno = await Alumno.find({});
+               return alumno;
+           } catch (error) {
+                console.log(error);  
+            }
+        },
+        obtenerAlumnos: async (_, {id}) => {
+            //Revisar si el alumno existe o no
+            const alumno = await Alumno.findById(id);
+            if(!alumno){
+                throw new Error('Alumno no encontrado')
+            }
+
+            return alumno;
         }
     },   
     
@@ -64,6 +82,44 @@ const resolvers = {
             return {
                 token : crearToken(existeUsuario, process.env.SECRETA, '24h')     
             }
+        },
+
+        nuevoAlumno: async (_, {input}) => {
+            try {
+                const alumno = new Alumno(input);
+
+                // Almacenar en la bd
+                const resultado = await alumno.save();
+
+                return resultado;
+            } catch (error) {
+                console.log(error);
+            }
+        },
+
+        actualizarAlumno: async (_, {id, input}) => {
+            //Revisar si el alumno existe o no
+            let alumno = await Alumno.findById(id);
+            if(!alumno){
+                throw new Error('Alumno no existe')
+            }
+
+            //Guardarlo en la base de datos
+            alumno = await Alumno.findOneAndUpdate({_id: id}, input, {new: true});
+
+            return alumno;
+
+        },
+        eliminarAlumno: async (_, {id}) => {
+            //Revisar si el alumno existe o no
+            let alumno = await Alumno.findById(id);
+            if(!alumno){
+                throw new Error('Alumno no existe')
+            }
+
+            //Eliminar
+            await Alumno.findOneAndDelete({_id : id});
+            return "Alumno Eliminado"
         }
 
     }
