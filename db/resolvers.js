@@ -1,5 +1,9 @@
 const Usuario = require('../models/Usuario');
+const Apoderado = require('../models/Apoderado');
 const Alumno = require('../models/Alumno');
+const Grado = require('../models/Grado');
+const Profesor = require('../models/Profesor');
+const Curso = require('../models/Curso');
 const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
@@ -18,7 +22,7 @@ const resolvers = {
         obtenerUsuario: async (_, {}, ctx) =>{
             return ctx.usuario
         },
-        obtenerAlumno: async () => {
+        obtenerAlumnos: async () => {
            try {
               const alumno = await Alumno.find({});
                return alumno;
@@ -26,7 +30,7 @@ const resolvers = {
                 console.log(error);  
             }
         },
-        obtenerAlumnos: async (_, {id}) => {
+        obtenerAlumno: async (_, {id}) => {
             //Revisar si el alumno existe o no
             const alumno = await Alumno.findById(id);
             if(!alumno){
@@ -34,7 +38,78 @@ const resolvers = {
             }
 
             return alumno;
-        }
+        },
+        obtenerGrados: async () => {
+            try {
+               const grado = await Grado.find({});
+                return grado;
+            } catch (error) {
+                 console.log(error);  
+             }
+        },
+        obtenerGrado: async (_, {id}) => {
+            //Revisar si el grado existe o no
+            const grado = await Grado.findById(id);
+            if(!grado){
+                throw new Error('Grado no encontrado')
+            }
+
+            return grado;
+        },
+        obtenerProfesores: async () => {
+            try {
+                const profesor = await Profesor.find({});
+                return profesor;
+            } catch (error) {
+                 console.log(error);  
+             }
+        },
+        obtenerProfesor: async (_, {id}) => {
+            //Revisar si el Profesor existe o no
+            
+            const profesor = await Profesor.findById(id);
+            if(!profesor){
+                throw new Error('Profesor no encontrado')
+            }
+
+            return profesor;
+        },
+        obtenerApoderados: async () => {
+            try {
+                const apoderado = await Apoderado.find({});
+                return apoderado;
+            } catch (error) {
+                 console.log(error);  
+             }
+        },
+        obtenerApoderado: async (_, {id}) => {
+            //Revisar si el Profesor existe o no
+            
+            const apoderado = await Apoderado.findById(id);
+            if(!apoderado){
+                throw new Error('Apoderado no encontrado')
+            }
+
+            return apoderado;
+        },
+        obtenerCursos: async () => {
+            try {
+                const dato = await Curso.find({});
+                return dato;
+            } catch (error) {
+                 console.log(error);  
+             }
+        },
+        obtenerCurso: async (_, {id}) => {
+            //Revisar si el Curso existe o no
+            
+            const dato = await Curso.findById(id);
+            if(!dato){
+                throw new Error('Curso no encontrado')
+            }
+
+            return dato;
+        },
     },   
     
     Mutation: {
@@ -83,9 +158,17 @@ const resolvers = {
             }
         },
 
+        // Alumno
         nuevoAlumno: async (_, {input}) => {
+            const { docNum } = input;
             try {
                 const alumno = new Alumno(input);
+
+                // Revisar su el profesor ya está registrado anteriormente
+                const existeUsuario = await Alumno.findOne({docNum});
+                if(existeUsuario){
+                    throw new Error ("El profesor ya está registrado");
+                }
 
                 // Almacenar en la bd
                 const resultado = await alumno.save();
@@ -119,8 +202,182 @@ const resolvers = {
             //Eliminar
             await Alumno.findOneAndDelete({_id : id});
             return "Alumno Eliminado"
-        }
+        },
 
+        // Grado
+        nuevoGrado: async (_, {input}) => {
+            try {
+                const grado = new Grado(input);
+
+                // Almacenar en la bd
+                const resultado = await grado.save();
+
+                return resultado;
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        actualizarGrado: async (_, {id, input}) => {
+            //Revisar si el grado existe o no
+            let grado = await Grado.findById(id);
+            if(!grado){
+                throw new Error('Grado no existe')
+            }
+
+            //Guardarlo en la base de datos
+            grado = await Grado.findOneAndUpdate({_id: id}, input, {new: true});
+
+            return grado;
+
+        },
+        eliminarGrado: async (_, {id}) => {
+            //Revisar si el grado existe o no
+            let grado = await Grado.findById(id);
+            if(!grado){
+                throw new Error('Grado no existe')
+            }
+
+            //Eliminar
+            await Grado.findOneAndDelete({_id : id});
+            return "Grado Eliminado"
+        },
+
+        // Profesor
+        nuevoProfesor: async (_, {input}) => {
+            const { dni } = input;
+            try {
+                const profesor = new Profesor(input);
+
+                // Revisar su el profesor ya está registrado anteriormente
+                const existeUsuario = await Profesor.findOne({dni});
+                if(existeUsuario){
+                    throw new Error ("El profesor ya está registrado");
+                }
+                
+                // Almacenar en la bd
+                const resultado = await profesor.save();
+
+                return resultado;
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        actualizarProfesor: async (_, {id, input}) => {
+            //Revisar si el profesor existe o no
+            let profesor = await Profesor.findById(id);
+            if(!profesor){
+                throw new Error('Profesor no existe')
+            }
+
+            //Guardarlo en la base de datos
+            profesor = await Profesor.findOneAndUpdate({_id: id}, input, {new: true});
+
+            return profesor;
+
+        },
+        eliminarProfesor: async (_, {id}) => {
+            //Revisar si el profesor existe o no
+            let profesor = await Profesor.findById(id);
+            if(!profesor){
+                throw new Error('Profesor no existe')
+            }
+
+            //Eliminar
+            await Profesor.findOneAndDelete({_id : id});
+            return "Profesor Eliminado"
+        },
+
+        // Apoderado
+        nuevoApoderado: async (_, {input}) => {
+            const { dni, email } = input;
+            try {
+                const apoderado = new Apoderado(input);
+
+                // Revisar su el apoderado ya está registrado anteriormente
+                const existeUsuario = await Apoderado.findOne({dni, email});
+                if(existeUsuario){
+                    throw new Error ("El apoderado ya está registrado");
+                }
+                
+                // Almacenar en la bd
+                const resultado = await apoderado.save();
+
+                return resultado;
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        actualizarApoderado: async (_, {id, input}) => {
+            //Revisar si el apoderado existe o no
+            let apoderado = await Apoderado.findById(id);
+            if(!apoderado){
+                throw new Error('Apoderado no existe')
+            }
+
+            //Guardarlo en la base de datos
+            apoderado = await Apoderado.findOneAndUpdate({_id: id}, input, {new: true});
+
+            return apoderado;
+
+        },
+        eliminarApoderado: async (_, {id}) => {
+            //Revisar si el apoderado existe o no
+            let apoderado = await Apoderado.findById(id);
+            if(!apoderado){
+                throw new Error('Apoderado no existe')
+            }
+
+            //Eliminar
+            await Apoderado.findOneAndDelete({_id : id});
+            return "Apoderado Eliminado"
+        },
+
+        
+
+        // Curso
+        nuevoCurso: async (_, {input}) => {
+            const { nombre } = input
+            try {
+                const dato = new Curso(input);
+
+                // Revisar su el dato ya está registrado anteriormente
+                const existeUsuario = await Curso.findOne({nombre});
+                if(existeUsuario){
+                    throw new Error ("El dato ya está registrado");
+                }
+                
+                // Almacenar en la bd
+                const resultado = await dato.save();
+
+                return resultado;
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        actualizarCurso: async (_, {id, input}) => {
+            //Revisar si el profesor existe o no
+            let dato = await Curso.findById(id);
+            if(!dato){
+                throw new Error('Curso no existe')
+            }
+
+            //Guardarlo en la base de datos
+            dato = await Curso.findOneAndUpdate({_id: id}, input, {new: true});
+
+            return dato;
+
+        },
+        eliminarCurso: async (_, {id}) => {
+            //Revisar si el dato existe o no
+            let dato = await Curso.findById(id);
+            if(!dato){
+                throw new Error('Curso no existe')
+            }
+
+            //Eliminar
+            await Curso.findOneAndDelete({_id : id});
+            return "Curso Eliminado"
+        },
     }
 }
 

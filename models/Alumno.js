@@ -10,15 +10,20 @@ const AlumnosSchema = mongoose.Schema({
         type: String,
         required: true,
         trim: true
+    },  
+    apoderado: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'apoderado',
+        require: true,
     },
-    direccion: {
-        type: String,
-        required: true,
+    nacimiento: {
+        type: Date,
+        require: true,
         trim: true
     },
-    fecha_nacimiento: {
+    docNum: {
         type: String,
-        required: true,
+        require: true,
         trim: true
     },
     creado: {
