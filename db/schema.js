@@ -4,11 +4,17 @@ const { gql } = require('apollo-server-express');
 const typeDefs = gql`
 scalar Date
 scalar AlumnoData
+
+enum TipoUsuario {
+    ADMINISTRADOR
+    ESTUDIANTE
+}
     #Types
     type Usuario {
         id: ID
         nombre: String
         apellido: String
+        tipoUsuario: TipoUsuario
         email: String
         creado: String
     }
@@ -73,6 +79,7 @@ scalar AlumnoData
         nombre: String!
         apellido: String!
         email: String!
+        tipoUsuario: TipoUsuario!
         password: String!
     }
 
