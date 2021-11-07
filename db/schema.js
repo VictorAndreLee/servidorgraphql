@@ -141,7 +141,7 @@ scalar Date
 
         #Apoderado
         obtenerApoderados: [Apoderado]
-        obtenerApoderado(id: ID!) :Apoderado
+        obtenerApoderado(id: ID!) : Apoderado
 
         #Curso
         obtenerCursos: [Curso]
