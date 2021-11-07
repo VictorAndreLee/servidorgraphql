@@ -1,11 +1,9 @@
-const { gql } = require('apollo-server');
-
-
+const { gql } = require('apollo-server-express');
 
 //Schema
 const typeDefs = gql`
 scalar Date
-    
+scalar AlumnoData
     #Types
     type Usuario {
         id: ID
@@ -24,7 +22,6 @@ scalar Date
         nombre: String
         apellido: String
         nacimiento: Date
-        apoderado: ID
         docNum:String
         creado: String
     }
@@ -57,6 +54,7 @@ scalar Date
         dni: String
         correo: String
         celular: String
+        apoderado: [Alumno]
         nacimiento: Date
         distrito: String
         direccion: String
@@ -86,8 +84,7 @@ scalar Date
     input AlumnoInput {
         nombre: String!
         apellido: String!
-        nacimiento: Date!
-        apoderado: ID!
+        nacimiento: Date
         docNum: String
     }
 
@@ -100,23 +97,24 @@ scalar Date
     input ProfesorInput {
         nombre: String!
         apellido: String!
-        dni: String!
-        correo: String!
-        celular: String!
-        nacimiento: Date!
-        distrito: String!
-        direccion: String!
+        dni: String
+        correo: String
+        celular: String
+        nacimiento: Date
+        distrito: String
+        direccion: String
     }
 
     input ApoderadoInput {
         nombre: String!
         apellido: String!
-        dni: String!
-        correo: String!
-        celular: String!
-        nacimiento: Date!
-        distrito: String!
-        direccion: String!
+        dni: String
+        correo: String
+        celular: String
+        nacimiento: Date
+        distrito: String
+        direccion: String
+        alumno: AlumnoData
     }
 
     input CursoInput {

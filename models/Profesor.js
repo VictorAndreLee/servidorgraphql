@@ -13,32 +13,32 @@ const ProfesorSchema = mongoose.Schema({
     }, 
     dni: {
         type: String,
-        required: true,
+        // required: true,
         trim: true
     }, 
     celular: {
         type: Number,
-        required: true,
+        // required: true,
         trim: true
     }, 
     nacimiento: {
         type: Date,
-        require: true,
+        // require: true,
         trim: true
     },
     correo: {
         type: String,
-        required: true,
+        // required: true,
         trim: true
     },
     distrito: {
         type: String,
-        required: true,
+        // required: true,
         trim: true
     },
     direccion: {
         type: String,
-        required: true,
+        // required: true,
         trim: true
     },
     creado: {

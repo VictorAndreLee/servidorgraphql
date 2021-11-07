@@ -10,13 +10,20 @@
   "author": "victor",
   "license": "ISC",
   "dependencies": {
-    "apollo-server": "^3.4.0",
+    "apollo-server-express": "^3.5.0",
     "bcrypt": "^5.0.1",
     "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
     "dotenv": "^10.0.0",
-    "graphql": "^15.6.1",
+    "express": "^4.17.1",
+    "global-agent": "^3.0.0",
+    "graphql": "^15.7.2",
+    "graphql-upload": "^12.0.0",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.0.11"
+    "mongoose": "^6.0.11",
+    "nodemailer": "^6.7.0",
+    "stream-promise": "^3.2.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.13"
