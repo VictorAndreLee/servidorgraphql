@@ -22,6 +22,11 @@ const UsuariosSchema = mongoose.Schema({
         required: true,
         trim: true
     },
+    tipoUsuario: {
+        type: String,
+        required: true,
+        trim: true
+    },
     creado: {
         type: Date,
         default: Date.now()
