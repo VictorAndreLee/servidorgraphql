@@ -1,13 +1,26 @@
 const mongoose = require ('mongoose');
 
+const timeElapsed = Date.now();
+const today = new Date(timeElapsed);
+const fecha = today.toLocaleDateString()
 const AdmisionSchema = mongoose.Schema({
-    apoderado: {
+    idApoderado: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
         trim: true
     },
-    estadoPostulacion: {
+    nombreApoderado: {
         type: String,
+        // require: true,
+        trim: true,
+    },
+    apellidoApoderado: {
+        type: String,
+        // require: true,
+        trim: true,
+    },
+    estadoPostulacion: {
+        type: Object,
         required: true,
         trim: true,
         default: 'Pendiente'
@@ -37,8 +50,8 @@ const AdmisionSchema = mongoose.Schema({
         type: Array
     },
     creado: {
-        type: Date,
-        default: Date.now()
+        type: String,
+        default: fecha
     } 
 });
 

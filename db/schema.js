@@ -6,6 +6,7 @@ const typeDefs = gql`
 scalar Upload
 scalar Date
 scalar AlumnoData
+scalar Estados
 
 enum TipoUsuario {
     ADMINISTRADOR
@@ -86,13 +87,16 @@ enum Estado {
 
     type Admision {
         id: ID
-        apoderado: ID
-        estadoPostulacion: Estado
+        idApoderado: ID
+        nombreApoderado: String
+        apellidoApoderado: String
+        estadoPostulacion: Estados
         estadoProgramacion: Estado
         estadoFirma: Estado
         estadoMatricula: Estado
         copias: [String]
         constancias: [String]
+        creado:String
     }
 
     #type Copias {
@@ -164,8 +168,10 @@ enum Estado {
     }
 
     input AdmisionInput {
-        apoderado: ID!
-        estadoPostulacion: Estado!
+        idApoderado: ID!
+        nombreApoderado: String!
+        apellidoApoderado: String!
+        estadoPostulacion: Estados!
         estadoProgramacion: Estado!
         estadoFirma: Estado!
         estadoMatricula: Estado!

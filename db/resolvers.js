@@ -121,8 +121,12 @@ const resolvers = {
     obtenerAdmisiones: async () => {
       //Revisar si el Curso existe o no
         try {
-            const dato = await Admision.find({});
-            return dato;  
+            const admisiones = await Admision.find({});
+            
+            console.log(admisiones);
+            const filtro = await Apoderado.find({_id: admisiones.apoderado});
+            // console.log(filtro);
+            return admisiones;  
         } catch (error) {
            throw new Error("Ocurrió un error en las consultas");
         }
@@ -173,7 +177,7 @@ const resolvers = {
 
       //Crear el token
       return {
-        token: crearToken(existeUsuario, process.env.SECRETA, "24h"),
+        token: crearToken(existeUsuario, process.env.SECRETA, "8h"),
       };
     },
 
@@ -421,7 +425,14 @@ const resolvers = {
       });
 
     setTimeout(async () => {
-        input.copias = url
+        const states = {
+          principal: "Revisión pendiente",
+          dniEst: "Revisar",
+          dniApo: "Revisar",
+          libreta: "Revisar"
+        }
+        input.estadoPostulacion = states;
+        input.copias = url;
         try {
         const admision = new Admision(input);
 
@@ -430,7 +441,7 @@ const resolvers = {
         } catch (error) {
             throw error  
         }
-    }, 5000);
+    }, 5100);
     return 'Admisión solicitada'
     },
   },
