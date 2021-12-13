@@ -13,14 +13,6 @@ enum TipoUsuario {
     ESTUDIANTE
 }
 
-enum Estado {
-    Pendiente
-    RevisionPendiente
-    Bloqueado
-    Rechazado
-    Aprobado
-    ProgramacionPendiente
-}
     #Types
     type Usuario {
         id: ID
@@ -70,6 +62,10 @@ enum Estado {
         nombre: String
         apellido: String
         dni: String
+        estadoAdmision: String
+        estadoProgramacion: String
+        estadoFirma: String
+        estadoMatricula: String
         correo: String
         celular: String
         apoderado: [Alumno]
@@ -90,15 +86,30 @@ enum Estado {
         idApoderado: ID
         nombreApoderado: String
         apellidoApoderado: String
-        estadoPostulacion: Estados
-        estadoProgramacion: Estado
-        estadoFirma: Estado
-        estadoMatricula: Estado
+        estadoAdmision: String
+        estadoDniEst: String
+        estadoDniApo: String
+        estadoLibreta: String
+        estadoProgramacion: String
+        estadoFirma: String
+        estadoMatricula: String
         copias: [String]
         constancias: [String]
+        estadoFichaMatricula: String
+        estadoConstancia: String
+        estadoCertificado: String
+        estadoCertoNoAdeu: String
+        estadoLibreMatri: String
+        estadoComportamiento: String
+        estadoCopiaDNI: String
         creado:String
     }
 
+    type Periodo {
+        id: ID
+        nombre: String
+    }
+    
     #type Copias {
     #    dni_estudiante: String
     #    dni_apoderado: String
@@ -112,7 +123,6 @@ enum Estado {
     #    res_traslado: String
     #    foto: String
     #}
-
     #Inputs
     input UsuarioInput {
         nombre: String!
@@ -121,25 +131,22 @@ enum Estado {
         tipoUsuario: TipoUsuario!
         password: String!
     }
-
     input AutenticarInput{
         email: String!
         password: String!
     }
-
     input AlumnoInput {
         nombre: String!
         apellido: String!
         nacimiento: Date
         docNum: String
+        
     }
-
     input GradoInput {
         nombre: String!
         nivel: String!
         aforo: Int!
     }
-
     input ProfesorInput {
         nombre: String!
         apellido: String!
@@ -150,7 +157,6 @@ enum Estado {
         distrito: String
         direccion: String
     }
-
     input ApoderadoInput {
         nombre: String!
         apellido: String!
@@ -162,19 +168,33 @@ enum Estado {
         direccion: String
         alumno: AlumnoData
     }
-
     input CursoInput {
         nombre: String!
     }
+
 
     input AdmisionInput {
         idApoderado: ID!
         nombreApoderado: String!
         apellidoApoderado: String!
-        estadoPostulacion: Estados!
-        estadoProgramacion: Estado!
-        estadoFirma: Estado!
-        estadoMatricula: Estado!
+        estadoAdmision: String
+        estadoDniEst: String
+        estadoDniApo: String
+        estadoLibreta: String
+        estadoProgramacion: String
+        estadoFirma: String
+        estadoMatricula: String
+        estadoFichaMatricula: String
+        estadoConstancia: String
+        estadoCertificado: String
+        estadoCertoNoAdeu: String
+        estadoLibreMatri: String
+        estadoComportamiento: String
+        estadoCopiaDNI: String
+    }
+
+    input PeriodoInput {
+        nombre: String!
     }
 
     type Query{
@@ -196,6 +216,7 @@ enum Estado {
         #Apoderado
         obtenerApoderados: [Apoderado]
         obtenerApoderado(id: ID!) : Apoderado
+        obtenerApoderadoEstado: Admision
 
         #Curso
         obtenerCursos: [Curso]
@@ -203,11 +224,15 @@ enum Estado {
 
         #Obtener admisiones
         obtenerAdmisiones: [Admision]
+        obtenerAdmisionesApoderado(id: ID): Admision
         obtenerAdmisionEstadoPostulacion(estado: String!): [Admision]
         obtenerAdmisionEstadoProgramacion(estado: String!): [Admision]
         obtenerAdmisionEstadoFirma(estado: String!): [Admision]
         obtenerAdmisionEstadoMatricula(estado: String!): [Admision]
 
+        #Obtener periodo
+        obtenerPeriodos: [Periodo]
+        obtenerPeriodo(id: ID!): Periodo
         
     }
 
@@ -243,6 +268,19 @@ enum Estado {
         
         #Admision
         nuevaAdmision(input: AdmisionInput, file1: Upload, file2: Upload, file3: Upload) : String
+        actualizarEstadoAdmision( id:ID! , input: String! ) : String
+        actualizarEstadoDniEst( id:ID! , input: String! ) : String
+        actualizarEstadoDniApo( id:ID! , input: String! ) : String
+        actualizarEstadoLibreta( id:ID! , input: String! ) : String
+        actualizarEstadoProgramacion( id:ID! , input: String! ) : String
+        actualizarEstadoFirma( id:ID! , input: String! ) : String
+        actualizarEstadoMatricula( id:ID! , input: String! ) : String
+
+        nuevaMatricula(input: AdmisionInput, file1: Upload, file2: Upload, file3: Upload,  file4: Upload, file5: Upload, file6: Upload, file7: Upload) : String
+        #Periodo
+        nuevoPeriodo(input: PeriodoInput) : Periodo
+        actualizarPeriodo( id: ID!, input : PeriodoInput) : Periodo
+        eliminarPeriodo( id: ID!) : String
     }
 `;
 

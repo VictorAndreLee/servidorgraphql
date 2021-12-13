@@ -7,6 +7,8 @@ const Admision = require("../models/Admision");
 const Curso = require("../models/Curso");
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+
+
 const {
   GraphQLUpload,
   graphqlUploadExpress, // A Koa implementation is also exported.
@@ -100,6 +102,16 @@ const resolvers = {
 
       return apoderado;
     },
+    obtenerApoderadoEstado: async (_, {}, ctx) => {
+      //Revisar si el Profesor existe o no
+      console.log("asasas", ctx.usuario);
+      const apoderado = await Admision.findOne({idApoderado: ctx.usuario.id});
+      if (!apoderado) {
+        throw new Error("Apoderado no encontrado");
+      }
+      console.log("adadwqqqqqq", apoderado);
+      return apoderado;
+    },
     obtenerCursos: async () => {
       try {
         const dato = await Curso.find({});
@@ -121,16 +133,20 @@ const resolvers = {
     obtenerAdmisiones: async () => {
       //Revisar si el Curso existe o no
         try {
-            const admisiones = await Admision.find({});
-            
-            console.log(admisiones);
-            const filtro = await Apoderado.find({_id: admisiones.apoderado});
-            // console.log(filtro);
-            return admisiones;  
+            const dato = await Admision.find({});
+            return dato;  
         } catch (error) {
-           throw new Error("Ocurrió un error en las consultas");
+          throw new Error("Ocurrió un error en las consultas");
         }
-      
+    },
+    obtenerAdmisionesApoderado: async (_, {}, ctx) => {
+      //Revisar si el Curso existe o no
+        try {
+            const dato = await Admision.findOne({idApoderado: ctx.usuario});
+            return dato;  
+        } catch (error) {
+          throw new Error("Ocurrió un error en las consultas");
+        }
     },
   },
   Upload: GraphQLUpload,
@@ -177,7 +193,7 @@ const resolvers = {
 
       //Crear el token
       return {
-        token: crearToken(existeUsuario, process.env.SECRETA, "8h"),
+        token: crearToken(existeUsuario, process.env.SECRETA, "24h"),
       };
     },
 
@@ -313,6 +329,10 @@ const resolvers = {
     nuevoApoderado: async (_, { input }) => {
       const { dni, email } = input;
       try {
+        // input.estadoAdmision = "Pendiente"
+        // input.estadoProgramacion = "Bloqueado"
+        // input.estadoFirma = "Bloqueado"
+        // input.estadoMatricula = "Bloqueado"
         const apoderado = new Apoderado(input);
 
         // Revisar su el apoderado ya está registrado anteriormente
@@ -399,6 +419,51 @@ const resolvers = {
       return "Curso Eliminado";
     },
 
+    // Periodo
+    nuevoPeriodo: async (_, { input }) => {
+      const { nombre } = input;
+      try {
+        const dato = new Periodo(input);
+
+        // Revisar su el dato ya está registrado anteriormente
+        const existeUsuario = await Periodo.findOne({ nombre });
+        if (existeUsuario) {
+          throw new Error("El dato ya está registrado");
+        }
+
+        // Almacenar en la bd
+        const resultado = await dato.save();
+
+        return resultado;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    actualizarPeriodo: async (_, { id, input }) => {
+      //Revisar si el profesor existe o no
+      let dato = await Periodo.findById(id);
+      if (!dato) {
+        throw new Error("Periodo no existe");
+      }
+
+      //Guardarlo en la base de datos
+      dato = await Periodo.findOneAndUpdate({ _id: id }, input, { new: true });
+
+      return dato;
+    },
+    eliminarPeriodo: async (_, { id }) => {
+      //Revisar si el dato existe o no
+      let dato = await Periodo.findById(id);
+      if (!dato) {
+        throw new Error("Periodo no existe");
+      }
+
+      //Eliminar
+      await Periodo.findOneAndDelete({ _id: id });
+      return "Periodo Eliminado";
+    },
+   
+    
     // Admisión
     nuevaAdmision: async (_, { input, file1, file2, file3 }) => {
       const files = [await file1, await file2, await file3];
@@ -424,15 +489,25 @@ const resolvers = {
         }
       });
 
-    setTimeout(async () => {
-        const states = {
-          principal: "Revisión pendiente",
-          dniEst: "Revisar",
-          dniApo: "Revisar",
-          libreta: "Revisar"
-        }
-        input.estadoPostulacion = states;
+      setTimeout(async () => {
+
         input.copias = url;
+        input.estadoAdmision = "Revisión pendiente";
+        input.estadoDniEst = "Pendiente";
+        input.estadoDniApo = "Pendiente";
+        input.estadoLibreta = "Pendiente";
+        input.estadoProgramacion = "Bloqueado";
+        input.estadoFirma = "Bloqueado";
+        input.estadoMatricula = "Bloqueado";
+
+        input.estadoFichaMatricula = "Pendiente";
+        input.estadoConstancia = "Pendiente";
+        input.estadoCertificado = "Pendiente";
+        input.estadoCertoNoAdeu = "Pendiente";
+        input.estadoLibreMatri = "Pendiente";
+        input.estadoComportamiento = "Pendiente";
+        input.estadoCopiaDNI = "Pendiente";
+
         try {
         const admision = new Admision(input);
 
@@ -441,8 +516,139 @@ const resolvers = {
         } catch (error) {
             throw error  
         }
-    }, 5100);
+    }, 6000);
     return 'Admisión solicitada'
+    },
+    // Admisión
+    nuevaMatricula: async (_, { input, file1, file2, file3, file4, file5, file6, file7 }) => {
+      const files = [await file1, await file2, await file3, await file4, await file5, await file6, await file7];
+
+      let url = [];
+
+      await files.map(async (element, i) => {
+        element.filename = await shortid.generate();
+        const { filename, createReadStream, mimetype } = element;
+        const extension = await mimetype.replace("application/", "");
+        const fileName = `certificados/${filename}.${extension}`;
+        const fileData = createReadStream();
+        try {
+          const resultado = await awsUploadFiles(fileData, fileName);
+          url.push(resultado);
+          return resultado;
+        } catch (error) {
+          console.log(error);
+          return {
+            status: false,
+            urlAvatar: null,
+          };
+        }
+      });
+
+      setTimeout(async () => {
+        try {
+          const { idApoderado } = input;
+          const links = url
+          console.log("asasdadsa", links);
+          const respuesta = await Admision.findOneAndUpdate({idApoderado: idApoderado}, {constancias: links}, { new: true });
+          console.log("respuesta", respuesta);
+        return respuesta
+        } catch (error) {
+          console.log("error", error);
+          throw error  
+        }
+    }, 10000);
+    return 'Matrícula solicitada'
+    },
+    actualizarEstadoAdmision: async (_, { id , input }) => {
+      try {
+        await Admision.findOneAndUpdate({_id: id}, {estadoAdmision: input}, { new: true });
+        return input;
+      } catch (error) {
+        throw new Error("Ocurrió un error");
+      }
+    },
+    actualizarEstadoDniEst: async (_, { id , input }) => {
+      try {
+        const resultado = await Admision.findOneAndUpdate({_id: id}, {estadoDniEst: input}, { new: true });
+        const { estadoDniEst, estadoDniApo, estadoLibreta } = resultado
+        if( estadoDniEst === "Aprobado", estadoDniApo === "Aprobado", estadoLibreta === "Aprobado" ){
+          await Admision.findOneAndUpdate({_id: id}, {estadoAdmision: "Aprobado", estadoProgramacion: "Programacion pendiente"}, { new: true });
+        } else if (estadoDniEst === "Rechazado", estadoDniApo === "Rechazado", estadoLibreta === "Rechazado") {
+          await Admision.findOneAndUpdate({_id: id}, {estadoAdmision: "Rechazado", estadoProgramacion: "Bloqueado"}, { new: true });
+        } 
+        else {
+          await Admision.findOneAndUpdate({_id: id}, {estadoAdmision: "Revisión pendiente", estadoProgramacion: "Bloqueado"}, { new: true });
+        }
+        return input;
+      } catch (error) {
+        throw new Error("Ocurrió un error");
+      }
+    },
+    actualizarEstadoDniApo: async (_, { id , input }) => {
+      try {
+        const resultado = await Admision.findOneAndUpdate({_id: id}, {estadoDniApo: input}, { new: true });
+        const { estadoDniEst, estadoDniApo, estadoLibreta } = resultado
+        if( estadoDniEst === "Aprobado", estadoDniApo === "Aprobado", estadoLibreta === "Aprobado" ){
+          await Admision.findOneAndUpdate({_id: id}, {estadoAdmision: "Aprobado", estadoProgramacion: "Programacion pendiente"}, { new: true });
+        } else if (estadoDniEst === "Rechazado", estadoDniApo === "Rechazado", estadoLibreta === "Rechazado") {
+          await Admision.findOneAndUpdate({_id: id}, {estadoAdmision: "Rechazado", estadoProgramacion: "Bloqueado"}, { new: true });
+        } 
+        else {
+          await Admision.findOneAndUpdate({_id: id}, {estadoAdmision: "Revisión pendiente", estadoProgramacion: "Bloqueado"}, { new: true });
+        }
+        return input;
+      } catch (error) {
+        throw new Error("Ocurrió un error");
+      }
+    },
+    actualizarEstadoLibreta: async (_, { id , input }) => {
+      try {
+        const resultado = await Admision.findOneAndUpdate({_id: id}, {estadoLibreta: input}, { new: true });
+        const { estadoDniEst, estadoDniApo, estadoLibreta } = resultado
+        if( estadoDniEst === "Aprobado", estadoDniApo === "Aprobado", estadoLibreta === "Aprobado" ){
+          await Admision.findOneAndUpdate({_id: id}, {estadoAdmision: "Aprobado", estadoProgramacion: "Programacion pendiente"}, { new: true });
+        } else if (estadoDniEst === "Rechazado", estadoDniApo === "Rechazado", estadoLibreta === "Rechazado") {
+          await Admision.findOneAndUpdate({_id: id}, {estadoAdmision: "Rechazado", estadoProgramacion: "Bloqueado"}, { new: true });
+        }
+         else {
+          await Admision.findOneAndUpdate({_id: id}, {estadoAdmision: "Revisión pendiente", estadoProgramacion: "Bloqueado"}, { new: true });
+        }
+        return input;
+      } catch (error) {
+        throw new Error("Ocurrió un error");
+      }
+    },
+    actualizarEstadoProgramacion: async (_, { id , input }) => {
+      try {
+        const resultado = await Admision.findOneAndUpdate({_id: id}, {estadoProgramacion: input}, { new: true });
+        const { estadoProgramacion, estadoMatricula } = resultado
+        if(estadoProgramacion === 'Aprobado'){
+          await Admision.findOneAndUpdate({_id: id}, {estadoMatricula: "Pendiente"}, { new: true }); 
+        }
+        
+        if(estadoProgramacion === 'Rechazado'){
+          await Admision.findOneAndUpdate({_id: id}, {estadoMatricula: "Bloqueado"}, { new: true }); 
+        }
+        return input;
+      } catch (error) {
+        throw new Error("Ocurrió un error");
+      }
+    },
+    actualizarEstadoFirma: async (_, { id , input }) => {
+      try {
+        await Admision.findOneAndUpdate({_id: id}, {estadoFirma: input}, { new: true });
+        return input;
+      } catch (error) {
+        throw new Error("Ocurrió un error");
+      }
+    },
+    actualizarEstadoMatricula: async (_, { id , input }) => {
+      try {
+        await Admision.findOneAndUpdate({_id: id}, {estadoMatricula: input}, { new: true });
+        return input;
+      } catch (error) {
+        throw new Error("Ocurrió un error");
+      }
     },
   },
 };

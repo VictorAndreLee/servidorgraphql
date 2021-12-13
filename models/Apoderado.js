@@ -11,6 +11,22 @@ const ApoderadoSchema = mongoose.Schema({
         required: true,
         trim: true
     }, 
+    // estadoAdmision: {
+    //     type: String,
+    //     trim: true
+    // }, 
+    // estadoProgramacion: {
+    //     type: String,
+    //     trim: true
+    // }, 
+    // estadoFirma: {
+    //     type: String,
+    //     trim: true
+    // }, 
+    // estadoMatricula: {
+    //     type: String,
+    //     trim: true
+    // }, 
     dni: {
         type: String,
         // required: true,

@@ -19,29 +19,61 @@ const AdmisionSchema = mongoose.Schema({
         // require: true,
         trim: true,
     },
-    estadoPostulacion: {
-        type: Object,
-        required: true,
-        trim: true,
-        default: 'Pendiente'
+    estadoAdmision: {
+        type: String,
+        trim: true
     },  
-
+    estadoFichaMatricula: {
+        type: String,
+        trim: true
+    },  
+    estadoConstancia: {
+        type: String,
+        trim: true
+    },  
+    estadoCertificado: {
+        type: String,
+        trim: true
+    },  
+    estadoCertoNoAdeu: {
+        type: String,
+        trim: true
+    },  
+    estadoLibreMatri: {
+        type: String,
+        trim: true
+    },  
+    estadoComportamiento: {
+        type: String,
+        trim: true
+    },  
+    estadoCopiaDNI: {
+        type: String,
+        trim: true
+    },  
+    estadoDniEst: {
+        type: String,
+        trim: true
+    },  
+    estadoDniApo: {
+        type: String,
+        trim: true
+    },  
+    estadoLibreta: {
+        type: String,
+        trim: true
+    },  
     estadoProgramacion: {
         type: String,
-        // require: true,
-        trim: true,
-        default: 'Bloqueado'
+        trim: true
     },
     estadoFirma: {
         type: String,
-        // require: true,
-        trim: true,
-        default: 'Bloqueado'
+        trim: true
     },
     estadoMatricula: {
         type: String,
         trim: true,
-        default: 'Bloqueado'
     },
     copias: {
         type: Array
