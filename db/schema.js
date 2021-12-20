@@ -57,6 +57,16 @@ enum TipoUsuario {
         creado: String
     }
 
+    type Order {
+        id: ID
+        idApoderado: ID 
+        token: Date
+        nombre: String 
+        apellido: String
+        motivo: String 
+        monto: Float 
+    }
+
     type Apoderado {
         id: ID
         nombre: String
@@ -172,6 +182,15 @@ enum TipoUsuario {
         nombre: String!
     }
 
+    input OrderInput {
+        idApoderado: ID!
+        token: Date
+        nombre: String! 
+        apellido: String!
+        motivo: String! 
+        monto: Float! 
+    }
+
 
     input AdmisionInput {
         idApoderado: ID!
@@ -276,7 +295,19 @@ enum TipoUsuario {
         actualizarEstadoFirma( id:ID! , input: String! ) : String
         actualizarEstadoMatricula( id:ID! , input: String! ) : String
 
+        #Matricula
         nuevaMatricula(input: AdmisionInput, file1: Upload, file2: Upload, file3: Upload,  file4: Upload, file5: Upload, file6: Upload, file7: Upload) : String
+        actualizarFichaMatricula(id:ID! , input: String!) : String
+        actualizarConstanciaMatri(id:ID! , input: String!) : String
+        actualizarCertificadoEstudios(id:ID! , input: String!) : String
+        actualizarConstNoAdeudo(id:ID! , input: String!) : String
+        actualizarLibreEstudios(id:ID! , input: String!) : String
+        actualizarLibretaComportamiento(id:ID! , input: String!) : String
+        actualizarConstTraslado(id:ID! , input: String!) : String
+        
+        #Pago
+        nuevoPago(input: OrderInput): Order
+
         #Periodo
         nuevoPeriodo(input: PeriodoInput) : Periodo
         actualizarPeriodo( id: ID!, input : PeriodoInput) : Periodo
